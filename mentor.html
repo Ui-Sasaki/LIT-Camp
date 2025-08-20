@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Camp Mentors — Mentors</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --sand:#fff8f0; --sky:#eaf9ff; --sun:#ffd166; --coral:#ff8a7a; --sea:#3cc6ff;
+    --leaf:#7be3b1; --ink:#0f172a; --muted:#556581;
+    --card:#ffffffcc; --border:rgba(15,23,42,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{ margin:0; color:var(--ink); font-family:'Fredoka', system-ui, Segoe UI, Roboto, Arial, sans-serif; min-height:100% }
+
+  .summer-bg{
+    position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+    background:
+      radial-gradient(40% 60% at 85% -10%, #e6f7ff 0%, transparent 60%),
+      radial-gradient(60% 50% at -10% 20%, #fff0e0 0%, transparent 55%),
+      linear-gradient(180deg, var(--sand) 0%, var(--sky) 100%);
+  }
+  .sun{
+    position:absolute; top:-40px; right:-40px; width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(40% 40% at 45% 40%, #fffbd1 0%, var(--sun) 60%, #ffb25e 100%);
+    box-shadow:0 0 80px #ffd16688, 0 0 160px #ffd16644;
+    z-index:1;
+  }
+  .rays{
+    position:absolute; top:-90px; right:-90px; width:340px; height:340px; z-index:0;
+    background: conic-gradient(from 0deg, rgba(255,209,102,.25), rgba(255,209,102,0) 30%);
+    -webkit-mask: radial-gradient(circle at center, transparent 34%, black 36%);
+            mask: radial-gradient(circle at center, transparent 34%, black 36%);
+    animation: spin 18s linear infinite;
+    filter: blur(1px);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg) } }
+
+  .cloud{
+    position:absolute; top:12vh; left:-20vw; width:36vw; height:16vw; min-width:280px; min-height:120px;
+    background:
+      radial-gradient(40% 50% at 30% 60%, #fff 0% , #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%),
+      radial-gradient(45% 55% at 60% 50%, #fff 0% , #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%),
+      radial-gradient(35% 45% at 45% 40%, #fff 0% , #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%);
+    filter: blur(1px); opacity:.6; border-radius:50%; animation: drift 60s linear infinite;
+  }
+  .cloud.c2{ top:22vh; left:55vw; width:30vw; height:14vw; opacity:.55; animation-duration:70s; animation-direction:reverse }
+  .cloud.c3{ top:34vh; left:-15vw; width:28vw; height:12vw; opacity:.5;  animation-duration:80s }
+  @keyframes drift{ 0%{ transform: translateX(0) translateY(0) } 50%{ transform: translateX(10vw) translateY(-1vh) } 100%{ transform: translateX(20vw) translateY(0) } }
+
+  .waves{ position:fixed; left:0; right:0; bottom:0; height:120px; z-index:0; }
+  .wave{ position:absolute; left:0; right:0; bottom:0; height:100%; opacity:.9 }
+  .wave svg{ position:absolute; left:0; bottom:0; width:200%; height:120px }
+  .wave.one  svg{ animation: bob 7s ease-in-out infinite }
+  .wave.two  svg{ animation: bob 9s ease-in-out infinite reverse }
+  .wave.three svg{ animation: bob 11s ease-in-out infinite }
+  @keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(8px) } }
+
+  .nav{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:12px 16px;
+    background:rgba(255,255,255,.75); backdrop-filter:blur(10px) saturate(1.1);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{font-weight:700; letter-spacing:.2px}
+  .links{display:flex; gap:10px}
+  .links a{
+    color:var(--ink); text-decoration:none; padding:8px 12px; border-radius:12px;
+    border:1px solid transparent; font-weight:600;
+  }
+  .links a[aria-current="page"]{background:linear-gradient(135deg, var(--coral), var(--sea)); color:#062b2b}
+  .links a:hover{background:rgba(60,198,255,.14); border-color:rgba(60,198,255,.28)}
+
+  .wrap{max-width:1100px; margin:0 auto; padding:16px}
+  .block{
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:20px; margin-top:16px;
+    box-shadow:0 10px 24px rgba(60,198,255,.12), 0 6px 12px rgba(255,138,122,.10);
+    backdrop-filter: blur(6px);
+  }
+  h1{margin:0 0 6px; font-size:2rem}
+  p.lead{margin:0; color:var(--muted)}
+
+  .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+  .controls input,.controls select{
+    background:#fff; color:var(--ink); border:1px solid var(--border);
+    padding:12px 14px; border-radius:14px; outline:none; font-weight:600;
+    box-shadow:0 4px 10px rgba(15,23,42,.04) inset;
+  }
+  .controls input{flex:1; min-width:220px}
+  .tag{
+    padding:10px 14px; border-radius:999px; font-size:.95rem; color:#062b2b;
+    background:linear-gradient(135deg, var(--coral), #ffd166);
+    border:none; font-weight:700; cursor:pointer;
+    box-shadow:0 6px 16px rgba(255,138,122,.25);
+  }
+
+  .rooms{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+  .rooms a{
+    background:#fff; border:1px solid var(--border); color:#062b2b; font-weight:700;
+    padding:8px 12px; border-radius:999px; text-decoration:none;
+  }
+  .rooms a:hover{background:rgba(60,198,255,.14); border-color:rgba(60,198,255,.28)}
+
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.grid{grid-template-columns:1fr}}
+  
+  .card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: white;
+
+  border: 4px solid transparent;
+  background-image: linear-gradient(white, white), 
+                    linear-gradient(135deg, red, orange, yellow, green, blue, indigo, violet);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card img.photo {
+  width: 120px;          
+  height: 120px;        
+  object-fit: cover;    
+  border-radius: 16px; 
+  display: block;
+  flex-shrink: 0;
+
+  border: 4px solid transparent;
+  background: linear-gradient(135deg,
+    red, orange, yellow, green, blue, indigo, violet);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+
+  box-shadow: 0 0 12px rgba(0,0,0,0.2);
+}
+
+.card:hover img.photo {
+  box-shadow: 0 0 18px rgba(255, 67, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.card .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card .info .name {
+  font-weight: 800;
+  font-size: 1.2rem;
+  justify-content: center;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.card .info .role {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.card .info .bio {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #2b3548;
+}
+
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow: 0 16px 30px rgba(60,198,255,.18), 0 10px 18px rgba(255,138,122,.14), 0 0 0 3px rgba(60,198,255,.16);
+  }
+
+  .photo{object-fit:cover}
+  @keyframes float{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-4px) } }
+
+  .info .name{font-weight:800}
+  .info .role{color:var(--muted); font-size:.95rem}
+  .info .bio{color:#2b3548; font-size:1rem; margin-top:6px}
+
+  h2{margin:0 0 10px}
+  .count{margin-left:6px; font-size:.85rem; background:#fff; border:1px solid var(--border); border-radius:999px; padding:2px 8px; color:#062b2b; vertical-align:middle}
+
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; place-items:center; z-index:40}
+  .modal.open{display:grid}
+  .box{
+    width:min(720px, 92vw);
+    background:#fff; color:var(--ink);
+    border:1px solid var(--border); border-radius:20px; padding:16px;
+    box-shadow:0 24px 60px rgba(0,0,0,.25)
+  }
+  .box .top{display:flex; gap:14px; align-items:center}
+  .box img{width:84px; height:84px; object-fit:cover; border-radius:16px; border:1px solid var(--border)}
+  .box .title{font-weight:900; font-size:1.25rem}
+  .box .sub{color:var(--muted); margin-top:2px}
+  .box .body{margin-top:10px; color:#334155; line-height:1.6}
+  .close{
+    margin-left:auto; background:linear-gradient(135deg, var(--coral), var(--sea));
+    color:#062b2b; border:none; border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:700
+  }
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .chip{
+    font-size:.85rem; color:#062b2b; border:none; font-weight:700;
+    background:linear-gradient(135deg, var(--coral), #ffd166);
+    border-radius:999px; padding:6px 10px;
+    box-shadow:0 6px 16px rgba(255,138,122,.25);
+  }
+</style>
+</head>
+<body>
+<div class="summer-bg" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="rays"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="waves">
+    <div class="wave one">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="rgba(60,198,255,.35)" d="M0,80 C240,140 480,20 720,80 C960,140 1200,40 1440,90 L1440,120 L0,120 Z"></path></svg>
+    </div>
+    <div class="wave two">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="rgba(123,227,177,.35)" d="M0,90 C240,130 480,40 720,90 C960,130 1200,50 1440,100 L1440,120 L0,120 Z"></path></svg>
+    </div>
+    <div class="wave three">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="rgba(255,138,122,.28)" d="M0,100 C240,120 480,60 720,100 C960,120 1200,70 1440,110 L1440,120 L0,120 Z"></path></svg>
+    </div>
+  </div>
+</div>
+
+<header class="nav" role="navigation">
+  <div class="brand"><a href="index.html" style="color:inherit;text-decoration:none;">Camp Mentors</a></div>
+  <nav class="links">
+    <a href="mentor.html" aria-current="page">Mentors・Staff</a>
+    <a href="diary.html">Diary</a>
+    <a href="picture.html">Photo Gallery</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="block">
+    <h1>Mentors 🌴</h1>
+    <div class="controls">
+      <input id="q" type="search" placeholder="🔎 Search for mentors or staff…" />
+      <select id="role" aria-label="Filter by role">
+        <option value="">All roles</option>
+        <option>Web Design Mentor</option>
+        <option>iOS Mentor</option>
+        <option>Minecraft Mentor</option>
+        <option>Unity Mentor</option>
+        <option>DTM/初音ミク Mentor</option>
+        <option>Design Mentor</option>
+        <option>Video Production Mentor</option>
+        <option>AI Mentor</option>
+        <option>Staff</option>
+      </select>
+      <button class="tag" id="clear" type="button">Clear</button>
+    </div>
+    <div class="rooms">
+      <a href="#emi">えみちゃんべや</a>
+      <a href="#yamamoto">やまもとホール</a>
+      <a href="#staff">スタッフちゃん</a>
+    </div>
+  </section>
+
+  <section class="block" id="staff" aria-label="スタッフちゃん">
+    <h2>スタッフちゃん <span class="count" id="count-staff">0</span></h2>
+    <div id="grid-staff" class="grid"></div>
+  </section>
+  
+  <section class="block" id="emi" aria-label="えみちゃんべや">
+    <h2>えみちゃんべや <span class="count" id="count-emi">0</span></h2>
+    <div id="grid-emi" class="grid"></div>
+  </section>
+
+  <section class="block" id="yamamoto" aria-label="やまもとホール">
+    <h2>やまもとホール <span class="count" id="count-yamamoto">0</span></h2>
+    <div id="grid-yamamoto" class="grid"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="mName">
+    <div class="top">
+      <img id="mImg" alt="">
+      <div>
+        <div class="title" id="mName">Name</div>
+        <div class="sub" id="mRole">Role</div>
+      </div>
+      <button class="close" id="closeBtn" type="button">Close</button>
+    </div>
+    <div class="body" id="mBio"></div>
+    <div class="chips" id="mTags"></div>
+  </div>
+</div>
+
+<script>
+  const mentors = [
+    { id:'pino', name:'Pino', role:'DTM/初音ミク Mentor', img:'Mentors/pino.jpeg',
+      room:'emi',
+      bio:'Hello, world!',
+      tags:['🎧DTM','♪初音ミク'] },
+    { id:'kihomori', name:'きほもり', role:'Staff', img:'Mentors/kihomori.jpeg',
+      room:'staff',
+      bio:'カメラもめっちゃ得意です📸いい写とれます！',
+      tags:['🍏 Swift'] },
+    { id:'no-su', name:'ノース', role:'Staff', img:'Mentors/no-su.jpeg',
+      room:'staff',
+      bio:'ノースだよ！大型犬とゲームが好き！',
+      tags:['📸映像・アニメーション','🎞️Unity','🎯C#'] },
+    { id:'shimato', name:'しまとー', role:'Unity Mentor',img: 'Mentors/shimato.jpeg',
+      room:'yamamoto',
+      bio:'I like everyone 💜',
+      tags:['🎯C#', '🎮 C', '🧩 C++', '♦️ Ruby', '⌨️ HTML', '🎨 CSS', '🪭 JavaScript'] },
+    { id:'yuuyu', name:'ゆうゆ', role:'AI Mentor', img: 'Mentors/yuuyu.png',
+      room:'yamamoto',
+      bio:'ピカチュウと仲良しです！',
+      tags:['🧩 C#','🐍 Python'] },
+    { id:'nen', name:'ネンネン', role:'Web Design Mentor', img: 'Mentors/nen.jpeg',
+      room:'emi',
+      bio:'APIとダッシュボード制作が好き。得意なスタックは Vite + React + Tailwind。',
+      tags:['⌨️ HTML','🎨 CSS','🪭 JavaScript'] },
+    { id:'himsame', name:'ひさーめ', role:'Unity Mentor', img: 'Mentors/hisame.jpeg',
+      room:'yamamoto',
+      bio:'ゲーム大好き！いつも明るめひさーめです〜',
+      tags:['🎯C#', '🐍 Python', '🧩 C++', '🪭 JavaScript'] },
+    { id:'conan', name:'こなん', role:'Unity Mentor', img: 'Mentors/conan.jpeg',
+      room:'yamamoto',
+      bio:'創り続けろ！',
+      tags:['🎞️Unity','🤖 AI','✏️ WebS'] },
+    { id:'chanc', name:'ちゃんしー', role:'iOS Mentor', img: 'Mentors/chanc.jpeg',
+      room:'emi',
+      bio:'子供の頃の写真です。かわいいでしょ🩷',},
+    { id:'youru', name:'ようる', role:'Unity Mentor', img: 'Mentors/youru.jpeg',
+      room:'yamamoto',
+      bio:'Hyvää joulua!',
+      tags:['🎯C#'] },
+    { id:'yutamaru', name:'ゆたまる', role:'Web Design Mentor', img: 'Mentors/yutamaru.jpeg',
+      room:'yamamoto',
+      bio:'バドミントン興味ある人一緒にやりましょう！🏸',
+      tags:['🌸 Java'] },
+    { id:'hisshi', name:'ひっしー', role:'Web Design Mentor', img: 'Mentors/hishii.JPG',
+      room:'emi',
+      bio:'みんなと一緒に開発できて楽しかったよー🙌',
+      tags:['🖼️ Adobe Illustrator '] },
+    { id:'piko', name:'ピコ🐥', role:'iOS Mentor', img: 'Mentors/piko.png',
+      room:'emi',
+      bio:'牛乳飲んで身長伸びましたん😆。',
+      tags:['🎮 C','🐍 Python','🥼 Matlab'] },
+    { id: 'teramon', name: 'てらもん', role: 'Staff', img: 'Mentors/teramon.jpeg',
+      room: 'staff',
+      bio: 'オックスフォードで囚人にしてもらいました！',
+      tags: ['💻 Web Design', '🎩 Web Service']
+    },
+    { id: 'mico', name: '巫女ちゃん', role: 'Web Design Mentor', img: 'Mentors/mico.jpeg',
+        room: 'emi',
+        bio: '話しかけてくれたそこのあなたには名刺を配っちゃうよん！',
+        tags: ['💻 Web Design']
+    }
+  ];
+
+const gridStaff = document.getElementById('grid-staff');
+const gridEmi = document.getElementById('grid-emi');
+const gridYamamoto = document.getElementById('grid-yamamoto');
+
+const countStaff = document.getElementById('count-staff');
+const countEmi = document.getElementById('count-emi');
+const countYamamoto = document.getElementById('count-yamamoto');
+
+
+
+  const q = document.getElementById('q');
+  const role = document.getElementById('role');
+  const clearBtn = document.getElementById('clear');
+
+  const modal = document.getElementById('modal');
+  const mImg = document.getElementById('mImg');
+  const mName = document.getElementById('mName');
+  const mRole = document.getElementById('mRole');
+  const mBio = document.getElementById('mBio');
+  const mTags = document.getElementById('mTags');
+  const closeBtn = document.getElementById('closeBtn');
+
+  // ---- Templates ----
+  function initials(name){ return name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+  function cardTemplate(m){
+    const photo = m.img ? `<img class="photo" src="${m.img}" alt="${m.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">`
+                        : `<span class="photo" style="display:none"></span>`;
+    const fallback = `<div class="avatar" style="display:${m.img?'none':'grid'}">${initials(m.name)}</div>`;
+    const bioShort = m.bio ? m.bio.slice(0,120) + (m.bio.length>120?'…':'') : '';
+    return `
+      <article class="card" data-id="${m.id}" tabindex="0" aria-label="${m.name}, ${m.role}">
+        ${photo}${fallback}
+        <div class="info">
+          <div class="name">${m.name}</div>
+          <div class="role">${m.role}</div>
+          ${bioShort ? `<div class="bio">${bioShort}</div>`:''}
+        </div>
+      </article>`;
+  }
+
+// ---- Render (grouped) ----
+function renderGrouped(list){
+  const staffList = list.filter(m=>m.room==='staff');
+  const emiList   = list.filter(m=>m.room==='emi');
+  const yamaList  = list.filter(m=>m.room==='yamamoto');
+
+  gridStaff.innerHTML    = staffList.map(cardTemplate).join('');
+  gridEmi.innerHTML      = emiList.map(cardTemplate).join('');
+  gridYamamoto.innerHTML = yamaList.map(cardTemplate).join('');
+
+  countStaff.textContent    = staffList.length;
+  countEmi.textContent      = emiList.length;
+  countYamamoto.textContent = yamaList.length;
+}
+
+  // ---- Filters ----
+  function applyFilters(){
+    const term = q.value.trim().toLowerCase();
+    const r = role.value;
+    const filtered = mentors.filter(m=>{
+      const hay = [m.name, m.role, m.bio, ...(m.tags||[])].join(' ').toLowerCase();
+      const hitTerm = !term || hay.includes(term);
+      const hitRole = !r || m.role === r;
+      return hitTerm && hitRole;
+    });
+    renderGrouped(filtered);
+  }
+  clearBtn.onclick = ()=>{ q.value=''; role.value=''; applyFilters(); }
+  q.addEventListener('input', applyFilters);
+  role.addEventListener('change', applyFilters);
+
+  // ---- Modal logic ----
+  function openModal(m){
+    mName.textContent = m.name;
+    mRole.textContent = m.role;
+    mBio.textContent = m.bio || '';
+    mTags.innerHTML = (m.tags||[]).map(t=>`<span class="chip">${t}</span>`).join('');
+    if(m.img){ mImg.src = m.img; mImg.style.display='block'; mImg.alt = m.name; } else { mImg.style.display='none'; }
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    history.replaceState(null, '', `#${m.id}`);
+  }
+  function closeModal(){
+    modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+    if(location.hash) history.replaceState(null,'', location.pathname);
+  }
+
+  function handleGridClick(e){
+    const card = e.target.closest('.card'); if(!card) return;
+    const m = mentors.find(x=>x.id===card.dataset.id); if(m) openModal(m);
+  }
+  function handleGridKey(e){
+    if(e.key==='Enter' || e.key===' '){
+      const card = e.target.closest('.card'); if(!card) return;
+      const m = mentors.find(x=>x.id===card.dataset.id); if(m) openModal(m);
+    }
+  }
+  [gridEmi, gridYamamoto].forEach(g=>{
+    g.addEventListener('click', handleGridClick);
+    g.addEventListener('keydown', handleGridKey);
+  });
+
+  closeBtn.onclick = closeModal;
+  modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+  // Deep link
+  function openFromHash(){
+    const id = location.hash.replace('#','');
+    const m = mentors.find(x=>x.id===id);
+    if(m) openModal(m);
+  }
+
+  // ---- Event binding for card clicks ----
+[gridStaff, gridEmi, gridYamamoto].forEach(g=>{
+  g.addEventListener('click', handleGridClick);
+  g.addEventListener('keydown', handleGridKey);
+});
+
+
+  // Init
+  renderGrouped(mentors);
+  openFromHash();
+</script>
+</body>
+</html>

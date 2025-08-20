@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Camp Mentors — Home</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --sand:#fff8f0; --sky:#eaf9ff; --sun:#ffd166; --coral:#ff8a7a; --sea:#3cc6ff;
+    --ink:#0f172a; --pulseDur:2.2s;
+    --headlineScale:.88;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;color:var(--ink);font-family:'Fredoka',system-ui,Segoe UI,Roboto,Arial,sans-serif}
+
+  /* NAV */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:12px 16px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(10px) saturate(1.1);
+    border-bottom:1px solid rgba(15,23,42,.12);
+  }
+  .brand{font-weight:700}
+  .links{display:flex; gap:10px}
+  .links a{color:var(--ink); text-decoration:none; padding:8px 12px; border-radius:10px; border:1px solid transparent; font-weight:600}
+  .links a:hover{background:rgba(60,198,255,.14); border-color:rgba(60,198,255,.28)}
+
+  /* SUMMER BACKGROUND */
+  .summer-bg{
+    position:fixed; inset:0; z-index:-2; pointer-events:none; overflow:hidden;
+    background:
+      radial-gradient(60% 80% at 100% -10%, #ffe9c2 0%, transparent 65%),
+      radial-gradient(60% 70% at -10% 0%, #c9f1ff 0%, transparent 60%),
+      linear-gradient(180deg, var(--sand) 0%, var(--sky) 100%);
+  }
+  .sun{
+    position:absolute; top:-80px; right:-80px; width:320px; height:320px; border-radius:50%;
+    background:radial-gradient(40% 40% at 45% 40%, #fffbd1 0%, var(--sun) 60%, #ffb25e 100%);
+    box-shadow:0 0 100px #ffd16688, 0 0 220px #ffd16644;
+    animation:sunPulse 4.2s ease-in-out infinite alternate;
+  }
+  @keyframes sunPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+  .cloud{
+    position:absolute; top:14vh; left:-22vw; width:40vw; height:18vw; min-width:320px; min-height:140px;
+    background:
+      radial-gradient(40% 50% at 30% 60%, #fff 0%, #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%),
+      radial-gradient(45% 55% at 60% 50%, #fff 0%, #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%),
+      radial-gradient(35% 45% at 45% 40%, #fff 0%, #ffffffc7 60%, #ffffff80 70%, #ffffff00 72%);
+    opacity:.6; border-radius:50%; filter:blur(1px); animation:drift 70s linear infinite;
+  }
+  .cloud.c2{ top:26vh; left:58vw; width:34vw; height:16vw; opacity:.55; animation-duration:80s; animation-direction:reverse }
+  .cloud.c3{ top:40vh; left:-18vw; width:30vw; height:14vw; opacity:.5;  animation-duration:90s }
+  @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(12vw)}100%{transform:translateX(24vw)}}
+
+  .waves{ position:fixed; left:0; right:0; bottom:0; height:140px; z-index:-1; }
+  .wave  { position:absolute; left:0; right:0; bottom:0; height:100%; }
+  .wave svg{ position:absolute; left:0; bottom:0; width:200%; height:140px }
+  .wave.one  svg{ animation:bob 8s ease-in-out infinite }
+  .wave.two  svg{ animation:bob 10s ease-in-out infinite reverse }
+  .wave.three svg{ animation:bob 12s ease-in-out infinite }
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(9px)}}
+
+  /* HERO W/ SPLINE */
+  .hero{position:relative; height:100svh; isolation:isolate;}
+  .spline{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:0; display:block; background:transparent; z-index:0;
+  }
+  .shade{
+    position:absolute; inset:0 0 auto 0; height:120px; z-index:1;
+    background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,0));
+    pointer-events:none;
+  }
+
+  /* SPLIT HEADLINE */
+  .hero-text{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; gap:8px; justify-content:center;
+    max-width:min(1050px,92vw); margin:auto;
+    padding-top:calc(70px + 2vh);
+    transform:translateY(1vh) scale(var(--headlineScale));
+    transform-origin:center;
+    pointer-events:none;
+  }
+  .line{display:flex; width:100%}
+  .line.left{justify-content:flex-start}
+  .line.right{justify-content:flex-end}
+  .word{
+    display:inline-block; font-size:clamp(24px,6.2vw,68px);
+    font-weight:900; letter-spacing:2px; text-transform:uppercase;
+    color:var(--ink);
+    background:rgba(255,255,255,.75);
+    border:1px solid rgba(15,23,42,.12);
+    padding:.34em .6em; border-radius:15px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 10px 24px rgba(60,198,255,.14), 0 10px 24px rgba(255,138,122,.12);
+    opacity:0;
+  }
+  @keyframes slideL{from{transform:translateX(-40px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes slideR{from{transform:translateX(40px); opacity:0}to{transform:translateX(0);opacity:1}}
+  .line.left  .word{animation:slideL .6s ease both}
+  .line.right .word{animation:slideR .6s ease both}
+  .line:nth-child(1) .word{animation-delay:.05s}
+  .line:nth-child(2) .word{animation-delay:.16s}
+  .line:nth-child(3) .word{animation-delay:.27s}
+  .line:nth-child(4) .word{animation-delay:.38s}
+  .line:nth-child(5) .word{animation-delay:.49s}
+
+  .beat{display:inline-block; transform-origin:center; animation:heartbeat var(--pulseDur) ease-in-out .9s infinite}
+  @keyframes heartbeat{
+    0%{transform:scale(1)}8%{transform:scale(1.08)}16%{transform:scale(1)}
+    24%{transform:scale(1.05)}32%{transform:scale(1)}100%{transform:scale(1)}
+  }
+
+  /* ---- Hello bubble: TOP-RIGHT, above “TO” ---- */
+  .hello-bubble{
+    position:absolute; z-index:3;
+    transform:translateX(-200px);
+    top: calc(70px + 8vh);                 /* higher so it doesn’t touch TO */
+    right: clamp(18px, 7vw, 96px);
+    background:rgba(255,255,255,.92);
+    color:var(--ink);
+    border:1px solid rgba(15,23,42,.12);
+    padding:.7rem .9rem; border-radius:14px;
+    box-shadow:0 10px 24px rgba(60,198,255,.14), 0 10px 24px rgba(255,138,122,.12);
+    max-width:min(44ch, 38vw);
+    font-weight:700; pointer-events:none;
+  }
+  .hello-bubble:after{
+    content:"";
+    position:absolute; left:-5px; top:20px; /* tail points leftwards */
+    width:14px; height:14px; background:inherit; border:inherit;
+    transform:rotate(45deg); border-left:none; border-bottom:none;
+  }
+  #helloText{ border-right:2px solid rgba(15,23,42,.5); padding-right:2px }
+
+  /* ---- CTA: under the sun (top-right) on desktop ---- */
+  .cta{
+    position:absolute; z-index:3;
+    transform: translateY(300px);
+    top: calc(150px + 14px);                /* just under the nav/sun area */
+    right: clamp(16px, 4vw, 40px);
+    display:inline-block;
+    background:linear-gradient(135deg, var(--coral), var(--sea));
+    color:#062b2b; font-weight:900; letter-spacing:.3px;
+    padding:14px 22px; border-radius:999px; text-decoration:none;
+    box-shadow:0 14px 30px rgba(60,198,255,.25), 0 10px 22px rgba(255,138,122,.22);
+    transition:transform .15s ease;
+    animation:ctaFloat 3.2s ease-in-out infinite;
+  }
+  .cta:hover{ transform:scale(1.03) }
+  @keyframes ctaFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } }
+
+  /* ---- Scroll hint stays bottom-center ---- */
+  .scroll-hint{
+    position:absolute; left:50%; bottom:3.4vh; transform:translateX(-50%);
+    font-size:22px; opacity:.7; animation:hint 1.8s ease-in-out infinite; z-index:3;
+  }
+  @keyframes hint{ 0%,100%{ transform:translateX(-50%) translateY(0)} 50%{ transform:translateX(-50%) translateY(6px)} }
+
+  /* responsive tweaks */
+  @media (max-width: 900px){
+    :root{ --headlineScale:.82 }
+    /* bubble moves down/right a bit on smaller screens */
+    .hello-bubble{ top:auto; bottom:24vh; right:8vw; max-width:70vw }
+  }
+  @media (max-width: 640px){
+    :root{ --headlineScale:.74 }
+    .hero-text{gap:6px}
+    /* CTA moves to bottom-center on mobile so it never hits SUMMER CAMP */
+    .cta{ top:auto; right:auto; left:50%; bottom:9vh; transform:translateX(-50%) }
+    .cta:hover{ transform:translateX(-50%) scale(1.03) }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .cta, .scroll-hint{ animation:none }
+    #helloText{ border-right:none }
+  }
+</style>
+</head>
+<body>
+
+<div class="summer-bg" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="waves">
+    <div class="wave one">
+      <svg viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path fill="rgba(60,198,255,.35)" d="M0,80 C240,140 480,20 720,80 C960,140 1200,40 1440,90 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+    <div class="wave two">
+      <svg viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path fill="rgba(123,227,177,.35)" d="M0,90 C240,130 480,40 720,90 C960,130 1200,50 1440,100 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+    <div class="wave three">
+      <svg viewBox="0 0 1440 140" preserveAspectRatio="none">
+        <path fill="rgba(255,138,122,.28)" d="M0,100 C240,120 480,60 720,100 C960,120 1200,70 1440,110 L1440,140 L0,140 Z"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<header class="nav" role="navigation">
+  <div class="brand"><a href="index.html" style="color:inherit;text-decoration:none;">2025 LIT Summer Camp @Tokyo-U</a></div>
+  <nav class="links">
+    <a href="mentor.html">Mentors・Staff</a>
+    <a href="diary.html">Diary</a>
+    <a href="photos.html">Photo Gallery</a>
+  </nav>
+</header>
+
+<section class="hero" aria-label="Landing">
+  <div class="shade"></div>
+
+  <iframe
+    class="spline"
+    src="https://my.spline.design/robotfollowcursorforlandingpage-D2fjgNmtTqiZT74MKD4e1gkO/"
+    allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; vr"
+    allowtransparency="true">
+  </iframe>
+
+  <div class="hero-text" aria-hidden="true">
+    <div class="line left"><span class="word"><span class="beat">Welcome</span></span></div>
+    <div class="line right"><span class="word"><span class="beat">To</span></span></div>
+    <div class="line left"><span class="word"><span class="beat">Life</span></span></div>
+    <div class="line right"><span class="word"><span class="beat">is Tech</span></span></div>
+    <div class="line left"><span class="word"><span class="beat">Summer Camp</span></span></div>
+  </div>
+
+  <div class="hello-bubble" aria-live="polite">
+    <span id="helloText"></span>
+  </div>
+
+  <a class="cta" id="ctaBtn" href="mentor.html" role="button" aria-label="Go to mentors page">
+    Meet the Mentors ✨
+  </a>
+</section>
+
+<script>
+const lines = [
+  "Welcome! So glad you’re here.",
+  "Meet the mentors and see what we built!",
+  "Tip: the robot follows your cursor",
+  "Wanna join our next camp? Please check that out too!"
+];
+const helloEl = document.getElementById("helloText");
+
+let idx = 0, pos = 0, deleting = false;
+function typeLoop(){
+  const text = lines[idx];
+  if(!deleting){
+    pos++;
+    helloEl.textContent = text.slice(0, pos);
+    if(pos === text.length){ deleting = true; setTimeout(typeLoop, 1300); return; }
+    setTimeout(typeLoop, 28 + Math.random()*40);
+  }else{
+    pos--;
+    helloEl.textContent = text.slice(0, pos);
+    if(pos === 0){ deleting = false; idx = (idx+1)%lines.length; setTimeout(typeLoop, 260); return; }
+    setTimeout(typeLoop, 18 + Math.random()*30);
+  }
+}
+typeLoop();
+
+const cta = document.getElementById('ctaBtn');
+cta.addEventListener('click', (e)=>{
+  emojiBurst(e.pageX, e.pageY);
+});
+function emojiBurst(x,y){
+  const EMOJIS = ["✨","🎉","🌴","🌊","☀️","🪩"];
+  for(let i=0;i<22;i++){
+    const span = document.createElement('span');
+    span.textContent = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+    span.style.position='fixed';
+    span.style.left = (x + (Math.random()*80-40))+'px';
+    span.style.top  = (y + (Math.random()*40-20))+'px';
+    span.style.fontSize = (18 + Math.random()*14)+'px';
+    span.style.pointerEvents='none';
+    span.style.transition='transform 900ms cubic-bezier(.21,.68,.15,1), opacity 900ms';
+    document.body.appendChild(span);
+    requestAnimationFrame(()=>{
+      span.style.transform = `translate(${(Math.random()*200-100)}px, ${80+Math.random()*120}px) rotate(${Math.random()*180-90}deg)`;
+      span.style.opacity = '0';
+    });
+    setTimeout(()=>span.remove(), 950);
+  }
+}
+</script>
+</body>
+</html>
